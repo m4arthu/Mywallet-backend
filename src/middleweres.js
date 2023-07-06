@@ -17,3 +17,12 @@
     })
     return userSchema.validate(user, { abortEarly: false })
  }
+
+ export const  newTransationValidate = (transation) =>{
+    const transationSchema = Joi.object({
+        value:Joi.number().required(),
+        descripton:Joi.string().required(),
+        type:Joi.string().required(),
+    })
+    return transationSchema.validate(transation,{abortEarly:false})
+ }

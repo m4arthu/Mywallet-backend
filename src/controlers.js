@@ -2,6 +2,7 @@
 import { db } from "./app.js";
 import bcrypt from "bcrypt"
 import {v4 as uuid} from "uuid"
+import daysjs from "dayjs"
 export async function userRegister(user) {
     const { name, email, password } = user
     try {
@@ -45,10 +46,11 @@ export async function userLogin(user) {
 }
 
 export async function findTransations(token){
-    let user  =  db.collection("sessions").findOne({token})
+    let user = await db.collection("sessions").findOne({token})
     try {
-      const transations = await db.collection("transations").find({_id:user.userId}).toArray()
+      const transations = await db.collection("transations").find({user:user.userId}).toArray()
       return transations
+      console.log(transations)
     } catch(error){
         console.log(error)
         return error
@@ -62,4 +64,27 @@ export async function tokenValidation(token){
    } else {
     return false
    }
+}
+
+export async function saveTransations(token,options) {
+   try {
+       let user =await db.collection("sessions").findOne({token})
+       const newTransation =  {
+           user:user.userId,
+           type:options.type,
+           title:options.descripton,
+           value:options.value,
+           data: daysjs(Date.now()).format("MM-DD")
+        }
+        await db.collection("transations").insertOne(newTransation)
+        return 200
+    }catch(err){
+        console.log(err) 
+    } 
+}
+
+export async function getUser(token){
+    let user = await db.collection("sessions").findOne({token})
+    const username = await db.collection("users").findOne({_id:user.userId})
+    return username.name
 }
