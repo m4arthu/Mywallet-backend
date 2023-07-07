@@ -20,7 +20,7 @@
 
  export const  newTransationValidate = (transation) =>{
     const transationSchema = Joi.object({
-        value:Joi.number().required(),
+        value:Joi.number().required().positive(),
         descripton:Joi.string().required(),
         type:Joi.string().required(),
     })
